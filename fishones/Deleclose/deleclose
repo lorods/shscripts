@@ -1,0 +1,3 @@
+#!/usr/bin/env -S fish --no-config
+QMPlay2 $argv[1]
+trap "rm $argv[1]" EXIT

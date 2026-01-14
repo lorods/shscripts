@@ -1,0 +1,27 @@
+#!/usr/bin/env -S fish --no-config
+echo -e 'If npm fails to install the required package because its process hasn´t been elevated, simply add the "sudo" argument (without quotes) when calling this script.\nYou can also run this script when you just want to add a new smart TV device—in this case, confirm the directories in your $PATH environment variable include the locations of the webOSCLI tools, otherwise the script will unnecessarily reinstall their package.'
+set -g chkpkg (npm list @webos-tools/cli -g --parseable)
+string match -q -e "@webos-tools/cli" $chkpkg
+if test $status = 1
+	set -g pkgin npm install -g @webos-tools/cli
+	if string length -q -- $argv
+		if test $argv = sudo
+			set --prepend pkgin sudo
+		end
+	end
+	eval $pkgin
+end
+read -p "echo -e 'Type below a nickname for the device you´re adding.\nIt will be the main way of selecting the right one, so choose wisely; defaults to \"homebrewed\" (without quotes) if you leave it empty:\n'" devname
+if ! string length -q -- $devname
+	set devname homebrewed
+end
+wl-copy $devname && echo "Successfully copied device name to clipboard for future use. When prompted for the device name by the ares-setup-device utility, make sure you use \"$devname\" (without quotes)."
+ares-setup-device
+ares-novacom --device $devname --getkey
+echo -e "\nYour added devices are:\n"; ares-setup-device --list
+ares-device --system-info --device $devname
+echo -e "If the information displayed above matches your model's actual details, you are good to install the webOS Homebrew Channel and the gems that come with it. Please view https://github.com/webosbrew/webos-homebrew-channel to learn more."
+
+	
+
+

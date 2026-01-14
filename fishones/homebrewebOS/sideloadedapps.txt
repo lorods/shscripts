@@ -1,0 +1,6 @@
+com.github.k4zmu2a.space-cadet-pinball
+com.pirate.refresh
+org.webosbrew.hbchannel
+org.xbmc.kodi
+twitch.adamffdev.v1
+youtube.leanback.v4
