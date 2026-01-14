@@ -1,0 +1,15 @@
+#!/usr/bin/env -S fish --no-config
+set OUTDIR "/tmp"
+set -g curtime (date -Iseconds)
+for iter in (seq 3)
+	if test $iter = 1 -o $iter = 3
+		set curtime (string replace : h $curtime)
+	else
+		set curtime (string replace : m $curtime)
+	end
+end
+set fnamelen 25
+set suffxnosec (string sub --start (math $fnamelen-5) $curtime)
+set curtime (string sub --end (math $fnamelen-31) $curtime)
+set curtime (echo {$curtime}"s|Relatively_to_UTC:"{$suffxnosec})
+wl-paste > "/tmp/"$curtime
