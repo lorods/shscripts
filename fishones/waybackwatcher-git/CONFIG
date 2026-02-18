@@ -1,0 +1,5 @@
+#!/usr/bin/env -S fish --no-config
+#set WANT_URL "https://example.com"
+
+#set TXT_FILTR "grep --recursive -o -E '[0-9]+(,[0-9]+)?%' ./*"
+

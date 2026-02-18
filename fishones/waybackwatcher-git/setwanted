@@ -1,0 +1,19 @@
+#!/usr/bin/env -S fish --no-config
+set requrl (read -p "echo -e 'Type below the URL you want to capture, then hit enter.\n'")
+set applfiltr (read -p "echo -e 'Now enter the command to filter the output files. Usually you can just grep them. For better reliability, provide an absolute path for your command to read.\n'")
+set APIKPG https://archive.org/account/s3.php
+echo -e "Finally, you must retrieve your API keys at https://archive.org/account/s3.php."
+set confi (read -p "echo -e 'Do you want to open this URL with your default browser and paste them here? (yes/y, no/n or browser/b to only open the browser at the specified location).\nIf you choose anything other than yes you´ll have to manually enter the credentials in the ENV file.\n'")
+set confi (string lower $confi); set confi (string sub --length 1 $confi)
+if test $confi = 'y' -o $confi = 'b'
+    xdg-open $APIKPG
+    if test $confi = 'y'
+        set creds[1] (read -p "echo 'Your access key: '")
+        set creds[2] (read -p "echo 'Your secret key: '")
+        sed -i "3 c set FULLK $creds[1]:$creds[2]" ./ENV
+    end
+end
+set applfiltr \"$applfiltr\"
+echo -e {$requrl}"\n"{$applfiltr}
+sed -i "3 c set WANT_URL "{$requrl} ./CONFIG
+sed -i "5 c set TXT_FILTR "{$applfiltr} ./CONFIG

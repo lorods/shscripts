@@ -1,0 +1,27 @@
+#!/usr/bin/env -S fish --no-config
+source ./CONFIG
+set API_URL "https://web.archive.org/cdx/search/cdx?url="{$WANT_URL}
+set BASE_URL "https://web.archive.org/web/"
+set SCR_URL "http://web.archive.org/screenshot/"
+set QUERYCL (curl {$API_URL})
+set -g TMSTMPS (echo $QUERYCL | grep -o "[0-9]\{14\}")
+echo -e "Starting retrieval of captures...\n"
+for curstmp in $TMSTMPS
+	set curfile ./snapshots/raw/{$curstmp} ./snapshots/screen/{$curstmp}
+	if ! test -f $curfile[1]
+		curl --output $curfile[1] {$BASE_URL}{$curstmp}"/"{$WANT_URL}
+	else
+		echo "Skipping "{$curfile[1]}" because there's already a file in the same path."
+	end
+	if ! test -f $curfile[2]
+		wget --output-document $curfile[2] {$BASE_URL}{$curstmp}"/"{$SCR_URL}{$WANT_URL}
+	else
+		echo "Skipping "{$curfile[2]}" because there's already a file in the same path."
+	end
+	echo -e "Done for "{$curstmp}".\n"
+end
+echo "Tracked item history:"
+set TXT_FILTR (string replace -m 2 "\"" \0 $TXT_FILTR)
+set COUNT_REPL (eval $TXT_FILTR | wc -l)
+eval $TXT_FILTR | string replace -m $COUNT_REPL ":" " -> " | string replace -m $COUNT_REPL -r ".*snapshots/raw/" \0 | sed 's/\(....\)\(..\)\(..\)\(..\)\(..\)\(..\)/\1-\2-\3 at \4:\5:\6/' | sort -h
+#this last regex was generated with AI
