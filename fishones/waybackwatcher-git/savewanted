@@ -1,5 +1,5 @@
 #!/usr/bin/env -S fish --no-config
 source ./CONFIG
+source ./ENV
 set URLWPARAMS "url="{$WANT_URL}"&capture_all=1&capture_screenshot=1&skip_first_archive=1"
-echo $URLWPARAMS
 curl -X POST -H "Accept: application/json" -H "Authorization: LOW $FULLK" -d"$URLWPARAMS" https://web.archive.org/save
