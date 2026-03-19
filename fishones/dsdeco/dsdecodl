@@ -1,0 +1,11 @@
+#!/usr/bin/env -S fish --no-config
+#run from the directory Discord/Vencord/your DS client is installed to!
+#DISCLAIMER: Discord may not like a standard user session token being used for scripting. Proceed with execution at your own risk!
+set CURTKN (grep --no-filename --recursive --only-matching --text -P "\b[\w-]{24}\.[\w-]{6}\.[\w-]{25,110}\b" ./* 2>/dev/null | sort --unique)
+set JSNSTR (curl 'https://discord.com/api/users/@me' --compressed -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.9' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Authorization:'$CURTKN -H 'DNT: 1' -H 'Sec-GPC: 1' -H 'Connection: keep-alive' -H 'Referer: https://discord.com/channels/@me' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'TE: trailers')
+set DECORA (echo $JSNSTR | jq --raw-output ".avatar_decoration_data | .asset")
+echo "Your avatar decoration's identifier is "$DECORA"."
+#avatar decos are animated pngs for the ones I've found so far
+curl --output "curavdeco.png" https://cdn.discordapp.com/avatar-decoration-presets/$DECORA.png --compressed -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.9' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Authorization:'$CURTKN -H 'DNT: 1' -H 'Sec-GPC: 1' -H 'Connection: keep-alive' -H 'Referer: https://discord.com/channels/@me' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'TE: trailers'
+and echo "Successfully downloaded decoration asset. Its filename is now curavdeco.png"
+or echo "Something went wrong and Curl couldn't download the decoration asset."
